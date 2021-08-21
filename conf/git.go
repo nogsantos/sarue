@@ -5,36 +5,41 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/nogsantos/sarue/utils"
 )
 
+type Git struct {}
+
 // Git confirms if the repository has a valid git configuration
-func Git() {
-	content, readFileError := ioutil.ReadFile(".git/config")
+func (git *Git) Init() {
+	_, readFileError := ioutil.ReadFile(".git/config")
 
 	if readFileError != nil {
-		initRepo()
+		git.initRepo()
 	}
 
-	hasRemoteEntry := strings.Contains(string(content), "remote \"origin\"")
+	// hasRemoteEntry := strings.Contains(string(content), "remote \"origin\"")
 
-	if hasRemoteEntry {
-		fmt.Println("hasRemoteEntry")
-	} else {
-		fmt.Println("dont hasRemoteEntry")
-	}
+	// if hasRemoteEntry {
+	// 	fmt.Println("hasRemoteEntry")
+	// } else {
+	// 	fmt.Println("dont hasRemoteEntry")
+	// }
 }
 
 // init Initialize a empty repo by user confirmation
-func initRepo() {
+func (git *Git) initRepo() {
 	initRepo := false
 	prompt := &survey.Confirm{
-		Message: "No git configuration file was found. Do you want to initialize it for you?",
+		Message: "No git configuration file was found. Do you want us to initialize it for you?",
 		Default: true,
 	}
-	survey.AskOne(prompt, &initRepo)
+	err := survey.AskOne(prompt, &initRepo)
+	if err != nil {
+		utils.Error(err.Error())
+	}
 
 	if !initRepo {
 		fmt.Println("To create the configuration you must initialize your repo before.")
