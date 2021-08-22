@@ -72,7 +72,7 @@ type Language struct {
 	Runtimer string
 	GitHubCiBuilder string
 	GitLabCiBuilder string
-	Extension []string
+	Extension []string	
 	PackageManager
 	Framework
 }
@@ -87,6 +87,7 @@ type Generate struct {
 	Tool string
 	Copyright string
 	Legal License
+	Commands map[string][]string
 	InitAt string
 	FinishAt string
 }
@@ -101,6 +102,9 @@ func (generator *Generate) InitProcess() {
 	generator.Copyright = fmt.Sprint("Copyright © ", time.Now().Year(), " Fabricio Nogueira <nogsantos@gmail.com>.")
 	generator.Legal = Licenses["mit"]
 	generator.InitAt = time.Now().Format(time.RubyDate)
+
+	// Its required initilize the commands map
+	generator.Commands = make(map[string][]string)
 }
 
 func initLicences() {
@@ -109,5 +113,5 @@ func initLicences() {
 
 func (generator *Generate) Create() {
 	generator.FinishAt = time.Now().Format(time.RubyDate)
-	fmt.Println(*generator)
+	// fmt.Println(*generator)
 }

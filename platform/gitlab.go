@@ -16,13 +16,13 @@ type GitLab struct {
 
 }
 
-func (gl *GitLab) Construct() {
+func (gl *GitLab) construct() {
 	gl.ConfigFile = ".gitlab-ci.yml"
 	gl.ConfigPath = "./"
 }
 
 func (gl *GitLab) Init(generate *application.Generate) {
-	gl.Construct()
+	gl.construct()
 	gl.gitlabConfigExists(generate)
 	gl.configureGitlaCi(generate)
 }
@@ -56,20 +56,4 @@ func (gl *GitLab) confirmReplacement(generate *application.Generate) {
 
 func (gl *GitLab) configureGitlaCi(generate *application.Generate) {
 	utils.WriteConfigFile(gl.ConfigPath, gl.ConfigFile, gl.GitlabTemplate(), generate)
-}
-
-func (gl *GitLab) GitlabTemplate() []byte {
-	return []byte(`#===================================================================
-# {{ .Tool }}
-#
-# {{ .Copyright }}
-#
-{{ if .Legal.Text }}{{ .Legal.Text }}{{ end }}
-#===================================================================
-stages:
-  - test
-  - build
-  - deploy
-
-`)
 }

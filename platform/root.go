@@ -17,7 +17,7 @@ func (p PlatfomType) String() string {
 }
 
 type Platfom interface {
-	Construct()
+	construct()
 	Init(generate *application.Generate)
 }
 

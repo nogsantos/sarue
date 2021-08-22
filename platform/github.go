@@ -17,12 +17,12 @@ type Github struct {
 	ConfigFile string
 }
 
-func (gb *Github) Construct() {
+func (gb *Github) construct() {
 	gb.ConfigDir = ".github/workflows/"
 }
 
 func (gb *Github) Init(generate *application.Generate) {
-	gb.Construct()
+	gb.construct()
 	gb.githubConfigExists()
 	gb.ParseFile(generate)
 }
@@ -64,91 +64,4 @@ func (gb *Github) configureFile(generate *application.Generate) {
 			utils.WriteConfigFile(gb.ConfigDir, gb.ConfigFile+"."+conf + ".yaml", tartargetConf, generate)
 		}
 	}
-}
-
-func (gb *Github) GithubLintTemplate() []byte {
-	return []byte(`#===================================================================
-# {{ .Tool }}
-#
-# {{ .Copyright }}
-#
-{{ if .Legal.Text }}{{ .Legal.Text }}{{ end }}
-#===================================================================
-name: Lint {{ .Language.Name }}
-on:
-  pull_request:
-    paths:{{ range .Language.Extension }}
-      - '**.{{ . }}'{{ end }}
-
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up {{ .Language.Name }}
-        uses: {{ .Language.GitHubCiBuilder }}
-        with:
-          python-version: {{ .Language.Version }}
-      - run: python -m pip install flake8
-      - run: flake8
-
-`)
-}
-
-func (gb *Github) GithubTestTemplate() []byte {
-	return []byte(`#===================================================================
-# {{ .Tool }}
-#
-# {{ .Copyright }}
-#
-{{ if .Legal.Text }}{{ .Legal.Text }}{{ end }}
-#===================================================================
-name: Test {{ .Language.Name }}
-on:
-  pull_request:
-    paths:{{ range .Language.Extension }}
-      - '**.{{ . }}'{{ end }}
-
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up {{ .Language.Name }}
-        uses: {{ .Language.GitHubCiBuilder }}
-        with:
-          python-version: {{ .Language.Version }}
-      - run: python -m pip install flake8
-      - run: flake8
-
-`)
-}
-
-func (gb *Github) GithubFormatTemplate() []byte {
-	return []byte(`#===================================================================
-# {{ .Tool }}
-#
-# {{ .Copyright }}
-#
-{{ if .Legal.Text }}{{ .Legal.Text }}{{ end }}
-#===================================================================
-name: Format {{ .Language.Name }}
-on:
-  pull_request:
-    paths:{{ range .Language.Extension }}
-      - '**.{{ . }}'{{ end }}
-
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up {{ .Language.Name }}
-        uses: {{ .Language.GitHubCiBuilder }}
-        with:
-          python-version: {{ .Language.Version }}
-      - run: python -m pip install flake8
-      - run: flake8
-
-`)
 }

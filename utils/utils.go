@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"text/template"
 
 	"github.com/nogsantos/sarue/application"
@@ -39,7 +40,13 @@ func WriteConfigFile(path, fileName string, local_template []byte, data *applica
 	}
 	defer cmdFile.Close()
 
-	githubTemplate := template.Must(template.New(data.Language.Name).Parse(string(local_template)))
+	funcMap := template.FuncMap{
+		"ToUpper": strings.ToUpper,
+		"ToLower": strings.ToLower,
+	}
+
+
+	githubTemplate := template.Must(template.New(data.Language.Name).Funcs(funcMap).Parse(string(local_template)))
 
 	err = githubTemplate.Execute(cmdFile, data)
 	if err != nil {

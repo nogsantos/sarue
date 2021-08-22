@@ -9,10 +9,10 @@ import (
 type LanguageType int
 const (
 	PYTHON LanguageType = iota
-	JAVASCRIPT
+	NODE
 )
 func (lt LanguageType) String() string {
-	return [...]string{"Python", "Javascript"}[lt]
+	return [...]string{"Python", "Node"}[lt]
 }
 
 type LanguageInterface interface {
@@ -28,7 +28,7 @@ func InitLanguage(generate *application.Generate) {
 	targetPlatform := ""
 	platformPrompt := &survey.Select{
 		Message: "Choose the project language:",
-		Options: []string{PYTHON.String(), JAVASCRIPT.String()},
+		Options: []string{PYTHON.String(), NODE.String()},
 	}
 	err := survey.AskOne(platformPrompt, &targetPlatform)
 	if err != nil {
@@ -39,9 +39,9 @@ func InitLanguage(generate *application.Generate) {
 		case PYTHON.String():
 			py := Python{}
 			py.Init(generate)
-		case JAVASCRIPT.String():
-			js := Javascript{}
-			js.Init(generate)
+		case NODE.String():
+			nd := Node{}
+			nd.Init(generate)
 		default:
 			utils.Error("Language")
 	}
