@@ -17,26 +17,40 @@ type Python struct {
 	DefinedStages []string
 	GithubActionsUser string
 	GitLabBuildImage string
-	Commands map[string][]string
+	LintCommands []string
+	FormatCommands []string
+	TestCommands []string
 }
 
 func (python *Python) construct() {
 	python.versions = []string{"3.10", "3.9", "3.8", "3.7", "3.6", "3.5"}
 	python.managers = []string{"pip", "pipenv", "poetry", "None"}
 	python.frameworks = []string{"Django", "Pytests", "None"}
-	python.stages = []string{"lint", "format", "test[TDD]"}
+	python.stages = []string{"lint", "format", "test"}
 	python.GithubActionsUser = "actions/setup-python@v2"
 	python.GitLabBuildImage = ""
-	// Its required initilize the commands map
-	python.Commands = make(map[string][]string)
+	python.LintCommands = []string{""}
+	python.FormatCommands = []string{""}
+	python.TestCommands = []string{""}
 }
 
 func (python *Python) Init(generate *application.Generate) {
 	python.construct()
-	python.defineVersion()
-	python.defineManager()
-	python.defineFramework()
 	python.defineStages()
+	python.defineVersion()
+	for _, stage := range python.DefinedStages {
+		if stage == "test" {
+			python.defineManager()
+			python.defineFramework()
+			python.defineTest()
+		}
+		if stage == "lint" {
+			python.defineLint()
+		}
+		if stage == "format" {
+			python.defineFormat()
+		}
+	}
 	python.fill(generate)
 }
 
@@ -53,7 +67,6 @@ func (python *Python) defineVersion() {
 	python.Version = targetVersion
 }
 
-
 func (python *Python) defineManager() {
 	targetManager := ""
 	prompt := &survey.Select{
@@ -65,19 +78,17 @@ func (python *Python) defineManager() {
 		utils.Error(err.Error())
 	}
 	python.Manager = targetManager
-	python.Commands["upgrade"] = append(python.Commands["upgrade"], "python -m pip install --upgrade pip")
+	python.TestCommands = append(python.TestCommands, "python -m pip install --upgrade pip")
 	switch targetManager {
 		case "pip":
-			python.Commands["install"] = append(python.Commands["install"], "python -m pip install -r requirements.txt")
+			python.TestCommands = append(python.TestCommands, "python -m pip install -r requirements.txt")
 		case "pipenv":
-			python.Commands["install"] = append(python.Commands["install"], "python -m pip install pipenv==2020.8.13")
-			python.Commands["install"] = append(python.Commands["install"], "pipenv install --system --deploy --python " + python.Version)
+			python.TestCommands = append(python.TestCommands, "python -m pip install pipenv==2020.8.13")
+			python.TestCommands = append(python.TestCommands, "pipenv install --system --deploy --python " + python.Version)
 		case "poetry":
-			python.Commands["install"] = append(python.Commands["install"], "python -m pip install poetry")
-			python.Commands["install"] = append(python.Commands["install"], "poetry config virtualenvs.create false")
-			python.Commands["install"] = append(python.Commands["install"], "poetry install --no-dev --no-root")
-		default:
-			python.Commands["install"] = append(python.Commands["install"], "python -m pip pip install -r requirements.txt")
+			python.TestCommands = append(python.TestCommands, "python -m pip install poetry")
+			python.TestCommands = append(python.TestCommands, "poetry config virtualenvs.create false")
+			python.TestCommands = append(python.TestCommands, "poetry install --dev --no-root")
 	}
 }
 
@@ -92,14 +103,6 @@ func (python *Python) defineFramework() {
 		utils.Error(err.Error())
 	}
 	python.Framework = targetFramework
-	switch targetFramework {
-		case "Django":
-			python.Commands["test"] = append(python.Commands["test"], "manage.py test --noinput --failfast -v 2")
-		case "Pytests":
-			python.Commands["test"] = append(python.Commands["test"], "pytest -vv -s --log-level=INFO")
-		default:
-			python.Commands["test"] = append(python.Commands["test"], "python -m pip pip install -r requirements.txt")
-	}
 }
 
 func (python *Python) defineStages() {
@@ -112,6 +115,27 @@ func (python *Python) defineStages() {
 	python.DefinedStages = targetStages
 }
 
+func (python *Python) defineLint() {
+	python.LintCommands = append(python.LintCommands, "python -m pip install flake8")
+	python.LintCommands = append(python.LintCommands, "flake8 --ignore E203,E501,W503 .")
+}
+
+func (python *Python) defineFormat() {
+	python.FormatCommands = append(python.FormatCommands, "python -m pip install black")
+	python.FormatCommands = append(python.FormatCommands, "black . --check")
+}
+
+func (python *Python) defineTest() {
+	switch python.Framework {
+		case "Django":
+			python.TestCommands = append(python.TestCommands, "python ./manage.py test --noinput --failfast -v 2")
+		case "Pytests":
+			python.TestCommands = append(python.TestCommands, "pytest -vv -s --log-level=INFO")
+		default:
+			python.TestCommands = append(python.TestCommands, "python -m pip pip install -r requirements.txt")
+	}
+}
+
 func (python *Python) fill(generate *application.Generate) {
 	generate.Language.Name = PYTHON.String()
 	generate.ManagerName = python.Manager
@@ -121,5 +145,7 @@ func (python *Python) fill(generate *application.Generate) {
 	generate.Language.Extension = []string{"py"}
 	generate.Language.GitHubCiBuilder = python.GithubActionsUser
 	generate.Language.GitLabCiBuilder = python.GitLabBuildImage
-	generate.Commands = python.Commands
+	generate.LintCommands = python.LintCommands
+	generate.FormatCommands = python.FormatCommands
+	generate.TestCommands = python.TestCommands
 }

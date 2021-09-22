@@ -72,7 +72,7 @@ type Language struct {
 	Runtimer string
 	GitHubCiBuilder string
 	GitLabCiBuilder string
-	Extension []string	
+	Extension []string
 	PackageManager
 	Framework
 }
@@ -87,7 +87,9 @@ type Generate struct {
 	Tool string
 	Copyright string
 	Legal License
-	Commands map[string][]string
+	LintCommands []string
+	FormatCommands []string
+	TestCommands []string
 	InitAt string
 	FinishAt string
 }
@@ -103,8 +105,9 @@ func (generator *Generate) InitProcess() {
 	generator.Legal = Licenses["mit"]
 	generator.InitAt = time.Now().Format(time.RubyDate)
 
-	// Its required initilize the commands map
-	generator.Commands = make(map[string][]string)
+	generator.LintCommands = []string{}
+	generator.FormatCommands = []string{}
+	generator.TestCommands = []string{}
 }
 
 func initLicences() {

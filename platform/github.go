@@ -1,7 +1,6 @@
 package platform
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -28,14 +27,14 @@ func (gb *Github) Init(generate *application.Generate) {
 }
 
 func (gb *Github) githubConfigExists() {
-	files, err := ioutil.ReadDir(gb.ConfigDir)
+	_, err := ioutil.ReadDir(gb.ConfigDir)
 	if err != nil {
 		gb.createConfDir()
 	}
 
-	for _, file := range files {
-		fmt.Println(file.Name())
-	}
+	// for _, file := range files {
+	// 	fmt.Println(file.Name())
+	// }
 }
 
 func (gb *Github) createConfDir() {
@@ -47,7 +46,7 @@ func (gb *Github) createConfDir() {
 
 func (gb *Github) ParseFile(generate *application.Generate) {
 	gb.ConfigFile = strings.ToLower(generate.Language.Name)
-	fmt.Printf("TEST1 %v \n",gb.ConfigFile)
+	// fmt.Printf("TEST1 %v \n",gb.ConfigFile) // REMOVE
 	gb.configureFile(generate)
 }
 
@@ -60,7 +59,7 @@ func (gb *Github) configureFile(generate *application.Generate) {
 			} else if conf == "test" {
 				tartargetConf = gb.GithubTestTemplate()
 			}
-			fmt.Printf("TEST %v \n",gb.ConfigFile)
+			// fmt.Printf("TEST %v \n",gb.ConfigFile) // REMOVE
 			utils.WriteConfigFile(gb.ConfigDir, gb.ConfigFile+"."+conf + ".yaml", tartargetConf, generate)
 		}
 	}

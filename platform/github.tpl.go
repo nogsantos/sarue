@@ -26,15 +26,9 @@ jobs:
         with:
           {{ .Language.Name | ToLower }}-version: {{ .Language.Version }}
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pipenv wheel
-
-      - name: Execute Linter
-        run: |
-          python -m pip install flake8
-          flake8
-
+      - name: Lint Execution
+        run: |{{range .LintCommands}}{{ . }}
+          {{ end }}
 `)
 }
 
@@ -64,15 +58,9 @@ jobs:
         with:
           {{ .Language.Name | ToLower }}-version: {{ .Language.Version }}
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pipenv wheel
-
-      - name: Execute Tests
-        run: |
-          python -m pip install flake8
-          flake8
-
+      - name: Test Execution
+        run: |{{range .TestCommands}}{{ . }}
+          {{ end }}
 `)
 }
 
@@ -93,6 +81,7 @@ on:
 jobs:
   format:
     runs-on: ubuntu-latest
+    steps:
       - name: Check out repository code
         uses: actions/checkout@v2
 
@@ -101,14 +90,8 @@ jobs:
         with:
           {{ .Language.Name | ToLower }}-version: {{ .Language.Version }}
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pipenv wheel
-
-      - name: Execute Formatter
-        run: |
-          python -m pip install flake8
-          flake8
-
+      - name: Format Execution
+        run: |{{range .FormatCommands}}{{ . }}
+          {{ end }}
 `)
 }

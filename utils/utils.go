@@ -33,7 +33,6 @@ func CreateConfigFile(path, fileName, content string) []byte {
 }
 
 func WriteConfigFile(path, fileName string, local_template []byte, data *application.Generate) {
-	fmt.Print(fileName)
 	cmdFile, err := os.Create(fmt.Sprintf("%s%s", path, fileName))
 	if err != nil {
 		Error("Create file " + err.Error())
@@ -52,4 +51,6 @@ func WriteConfigFile(path, fileName string, local_template []byte, data *applica
 	if err != nil {
 		Error(err.Error())
 	}
+
+	fmt.Print("🚀 Success! The files were generated.")
 }
