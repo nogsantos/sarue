@@ -116,5 +116,5 @@ func initLicences() {
 
 func (generator *Generate) Create() {
 	generator.FinishAt = time.Now().Format(time.RubyDate)
-	// fmt.Println(*generator)
+	fmt.Print("🚀 Success! The files were generated.")
 }

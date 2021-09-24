@@ -25,7 +25,11 @@ type Node struct {
 
 func (node *Node) construct() {
 	node.platforms = []string{"Fronted", "Backend"}
-	node.managers = []string{"Npm", "Yarn", "None"}
+	// NPM: https://docs.npmjs.com/cli/v7/commands
+	// YARN 1: https://classic.yarnpkg.com/en/docs/cli/
+	// YARN 2: https://yarnpkg.com/cli/install
+	// PNPM: https://pnpm.io/cli/add
+	node.managers = []string{"npm", "yarn 1", "yarn 2", "pnpm", "None"}
 	node.frontFrameworks = []string{"Vue", "React", "None"}
 	node.backendFrameworks = []string{"Nest", "Vuex", "Next"}
 	node.nodeVersions = []string{"15.x", "14.x", "12.x", "10.x"}

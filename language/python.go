@@ -88,7 +88,7 @@ func (python *Python) defineManager() {
 		case "poetry":
 			python.TestCommands = append(python.TestCommands, "python -m pip install poetry")
 			python.TestCommands = append(python.TestCommands, "poetry config virtualenvs.create false")
-			python.TestCommands = append(python.TestCommands, "poetry install --dev --no-root")
+			python.TestCommands = append(python.TestCommands, "poetry install --no-root")
 	}
 }
 
@@ -117,7 +117,7 @@ func (python *Python) defineStages() {
 
 func (python *Python) defineLint() {
 	python.LintCommands = append(python.LintCommands, "python -m pip install flake8")
-	python.LintCommands = append(python.LintCommands, "flake8 --ignore E203,E501,W503 .")
+	python.LintCommands = append(python.LintCommands, "flake8 . --ignore E203,E501,W503 --count --select=E9,F63,F7,F82 --show-source --exit-zero --max-complexity=10 --max-line-length=127 --statistics")
 }
 
 func (python *Python) defineFormat() {

@@ -9,7 +9,15 @@ func (gb *Github) GithubLintTemplate() []byte {
 {{ if .Legal.Text }}{{ .Legal.Text }}{{ end }}
 #===================================================================
 name: Lint {{ .Language.Name }}
+
 on:
+  push:
+    branches:
+      - '*'
+      - '*/*'
+      - '**'
+      - '!master'
+
   pull_request:
     paths:{{ range .Language.Extension }}
       - '**.{{ . }}'{{ end }}
@@ -41,7 +49,15 @@ func (gb *Github) GithubTestTemplate() []byte {
 {{ if .Legal.Text }}{{ .Legal.Text }}{{ end }}
 #===================================================================
 name: Test {{ .Language.Name }}
+
 on:
+  push:
+    branches:
+      - '*'
+      - '*/*'
+      - '**'
+      - '!master'
+
   pull_request:
     paths:{{ range .Language.Extension }}
       - '**.{{ . }}'{{ end }}
@@ -73,7 +89,15 @@ func (gb *Github) GithubFormatTemplate() []byte {
 {{ if .Legal.Text }}{{ .Legal.Text }}{{ end }}
 #===================================================================
 name: Format {{ .Language.Name }}
+
 on:
+  push:
+    branches:
+      - '*'
+      - '*/*'
+      - '**'
+      - '!master'
+
   pull_request:
     paths:{{ range .Language.Extension }}
       - '**.{{ . }}'{{ end }}

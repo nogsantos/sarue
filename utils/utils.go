@@ -51,6 +51,4 @@ func WriteConfigFile(path, fileName string, local_template []byte, data *applica
 	if err != nil {
 		Error(err.Error())
 	}
-
-	fmt.Print("🚀 Success! The files were generated.")
 }
