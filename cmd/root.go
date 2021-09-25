@@ -19,6 +19,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+
 	"github.com/spf13/cobra"
 
 	"github.com/spf13/viper"
@@ -69,7 +70,7 @@ func initConfig() {
 		// Search config in home directory with name ".ci" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".ci")
+		viper.SetConfigName(".sarue")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
