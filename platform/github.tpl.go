@@ -51,9 +51,9 @@ jobs:
           {{ .Language.Name | ToLower }}-version: {{ .Language.Version }}
 
       - name: Lint Execution
-        run: |{{range .LintCommands}}{{ . }}
-          {{ end }}
-`)
+        run: |
+          {{range .Command.Linter}}{{ . }}
+          {{ end }}`)
 }
 
 func (gb *Github) GithubTestTemplate() []byte {
@@ -91,9 +91,9 @@ jobs:
           {{ .Language.Name | ToLower }}-version: {{ .Language.Version }}
 
       - name: Test Execution
-        run: |{{range .TestCommands}}{{ . }}
-          {{ end }}
-`)
+        run: |
+          {{range .Command.Test}}{{ . }}
+          {{ end }}`)
 }
 
 func (gb *Github) GithubFormatTemplate() []byte {
@@ -131,7 +131,7 @@ jobs:
           {{ .Language.Name | ToLower }}-version: {{ .Language.Version }}
 
       - name: Format Execution
-        run: |{{range .FormatCommands}}{{ . }}
-          {{ end }}
-`)
+        run: |
+          {{range .Command.Formatter}}{{ . }}
+          {{ end }}`)
 }

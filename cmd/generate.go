@@ -34,23 +34,19 @@ var generateCmd = &cobra.Command{
   Long form: sarue generate
   Short form: sarue g`,
 	Run: func(cmd *cobra.Command, args []string) {
-		generate := application.Generate{}
-		generate.InitProcess()
-
+		generate := *application.NewGenerate()
+		// Validate if is a git repository
 		gitChecker()
-
-		language.InitLanguage(&generate)
-		platform.InitPlatform(&generate)
-
-		generate.Create()
+		// Setting up the languages
+		language.Init(&generate)
+		// Setting up the platform
+		platform.Init(&generate)
+		// Finishing the process
+		generate.Finish()
 	},
 }
 
 func gitChecker() {
-	// @todo: Remove-me
-	// dur := time.Duration(rand.Intn(1000)) * time.Millisecond
-	// time.Sleep(dur)
-
 	git := conf.Git{}
 	git.Init()
 }

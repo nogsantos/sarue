@@ -37,7 +37,8 @@ type Platfom interface {
 	Init(generate *application.Generate)
 }
 
-func InitPlatform(generate *application.Generate) {
+// Init Platform definitions
+func Init(generate *application.Generate) {
 	targetPlatform := ""
 	platformPrompt := &survey.Select{
 		Message: "Choose the platform:",

@@ -26,25 +26,46 @@ type LanguageType int
 const (
 	PYTHON LanguageType = iota
 	NODE
+	DENO
+	GO
 )
 func (lt LanguageType) String() string {
-	return [...]string{"Python", "Node"}[lt]
+	return [...]string{
+		"Python",
+		"Node - as Javascript Runtime",
+		"Deno - as Javascript Runtime",
+	}[lt]
 }
 
 type LanguageInterface interface {
 	Init(generate *application.Generate)
-	construct()
 	defineManager()
 	defineFramework()
 	defineVersion()
+	defineLint()
+	defineTest()
+	defineFormat()
 	fill(generate *application.Generate)
 }
 
-func InitLanguage(generate *application.Generate) {
+type Command struct {
+	Linter []string
+	Formater []string
+	Test []string
+}
+
+type Language struct {
+	Command *Command
+}
+
+// Init Language definitions
+func Init(generate *application.Generate) {
+	var language LanguageInterface
 	targetPlatform := ""
 	platformPrompt := &survey.Select{
 		Message: "Choose the project language:",
-		Options: []string{PYTHON.String(), NODE.String()},
+		Help: "By the chosen language, you will be prompted with the properly configurations.",
+		Options: []string{PYTHON.String(), NODE.String(), DENO.String()},
 	}
 	err := survey.AskOne(platformPrompt, &targetPlatform)
 	if err != nil {
@@ -53,11 +74,14 @@ func InitLanguage(generate *application.Generate) {
 
 	switch targetPlatform {
 		case PYTHON.String():
-			py := Python{}
-			py.Init(generate)
+			language = NewPython()
+			language.Init(generate)
 		case NODE.String():
-			nd := Node{}
-			nd.Init(generate)
+			language = NewJavascript(NODE.String())
+			language.Init(generate)
+		case DENO.String():
+			language = NewJavascript(DENO.String())
+			language.Init(generate)
 		default:
 			utils.Error("Language")
 	}

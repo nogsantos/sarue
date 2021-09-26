@@ -23,6 +23,7 @@ import (
 )
 
 type Python struct {
+	Language *Language
 	managers []string
 	frameworks []string
 	versions []string
@@ -33,25 +34,29 @@ type Python struct {
 	DefinedStages []string
 	GithubActionsUser string
 	GitLabBuildImage string
-	LintCommands []string
-	FormatCommands []string
-	TestCommands []string
 }
 
-func (python *Python) construct() {
-	python.versions = []string{"3.10", "3.9", "3.8", "3.7", "3.6", "3.5"}
-	python.managers = []string{"pip", "pipenv", "poetry", "None"}
-	python.frameworks = []string{"Django", "Pytests", "None"}
-	python.stages = []string{"lint", "format", "test"}
-	python.GithubActionsUser = "actions/setup-python@v2"
-	python.GitLabBuildImage = ""
-	python.LintCommands = []string{""}
-	python.FormatCommands = []string{""}
-	python.TestCommands = []string{""}
+// NewPython create a new Python instance
+func NewPython() *Python {
+	return &Python{
+		versions: []string{"3.10", "3.9", "3.8", "3.7", "3.6", "3.5"},
+		managers: []string{"pip", "pipenv", "poetry", "None"},
+		frameworks: []string{"Django", "Pytests", "None"},
+		stages: []string{"lint", "format", "test"},
+		GithubActionsUser: "actions/setup-python@v2",
+		GitLabBuildImage: "",
+		Language: &Language{
+			Command: &Command{
+				Linter: []string{},
+				Formater: []string{},
+				Test: []string{},
+			},
+		},
+	}
 }
 
+// Init Python configuration process
 func (python *Python) Init(generate *application.Generate) {
-	python.construct()
 	python.defineStages()
 	python.defineVersion()
 	for _, stage := range python.DefinedStages {
@@ -94,17 +99,17 @@ func (python *Python) defineManager() {
 		utils.Error(err.Error())
 	}
 	python.Manager = targetManager
-	python.TestCommands = append(python.TestCommands, "python -m pip install --upgrade pip")
+	python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip install --upgrade pip")
 	switch targetManager {
 		case "pip":
-			python.TestCommands = append(python.TestCommands, "python -m pip install -r requirements.txt")
+			python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip install -r requirements.txt")
 		case "pipenv":
-			python.TestCommands = append(python.TestCommands, "python -m pip install pipenv==2020.8.13")
-			python.TestCommands = append(python.TestCommands, "pipenv install --system --deploy --python " + python.Version)
+			python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip install pipenv==2020.8.13")
+			python.Language.Command.Test = append(python.Language.Command.Test, "pipenv install --system --deploy --python " + python.Version)
 		case "poetry":
-			python.TestCommands = append(python.TestCommands, "python -m pip install poetry")
-			python.TestCommands = append(python.TestCommands, "poetry config virtualenvs.create false")
-			python.TestCommands = append(python.TestCommands, "poetry install --no-root")
+			python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip install poetry")
+			python.Language.Command.Test = append(python.Language.Command.Test, "poetry config virtualenvs.create false")
+			python.Language.Command.Test = append(python.Language.Command.Test, "poetry install --no-root")
 	}
 }
 
@@ -125,6 +130,7 @@ func (python *Python) defineStages() {
 	targetStages := []string{}
 	prompt := &survey.MultiSelect{
 		Message: "Select the stages:",
+		Help: "Stages are the steps that the pipeline will cover.",
 		Options: python.stages[:],
 	}
 	survey.AskOne(prompt, &targetStages)
@@ -132,23 +138,23 @@ func (python *Python) defineStages() {
 }
 
 func (python *Python) defineLint() {
-	python.LintCommands = append(python.LintCommands, "python -m pip install flake8")
-	python.LintCommands = append(python.LintCommands, "flake8 . --ignore E203,E501,W503 --count --select=E9,F63,F7,F82 --show-source --exit-zero --max-complexity=10 --max-line-length=127 --statistics")
+	python.Language.Command.Linter = append(python.Language.Command.Linter, "python -m pip install flake8")
+	python.Language.Command.Linter = append(python.Language.Command.Linter, "flake8 . --ignore E203,E501,W503 --count --select=E9,F63,F7,F82 --show-source --exit-zero --max-complexity=10 --max-line-length=127 --statistics")
 }
 
 func (python *Python) defineFormat() {
-	python.FormatCommands = append(python.FormatCommands, "python -m pip install black")
-	python.FormatCommands = append(python.FormatCommands, "black . --check")
+	python.Language.Command.Formater = append(python.Language.Command.Formater, "python -m pip install black")
+	python.Language.Command.Formater = append(python.Language.Command.Formater, "black . --check")
 }
 
 func (python *Python) defineTest() {
 	switch python.Framework {
 		case "Django":
-			python.TestCommands = append(python.TestCommands, "python ./manage.py test --noinput --failfast -v 2")
+		python.Language.Command.Test = append(python.Language.Command.Test, "python ./manage.py test --noinput --failfast -v 2")
 		case "Pytests":
-			python.TestCommands = append(python.TestCommands, "pytest -vv -s --log-level=INFO")
+			python.Language.Command.Test = append(python.Language.Command.Test, "pytest -vv -s --log-level=INFO")
 		default:
-			python.TestCommands = append(python.TestCommands, "python -m pip pip install -r requirements.txt")
+			python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip pip install -r requirements.txt")
 	}
 }
 
@@ -161,7 +167,7 @@ func (python *Python) fill(generate *application.Generate) {
 	generate.Language.Extension = []string{"py"}
 	generate.Language.GitHubCiBuilder = python.GithubActionsUser
 	generate.Language.GitLabCiBuilder = python.GitLabBuildImage
-	generate.LintCommands = python.LintCommands
-	generate.FormatCommands = python.FormatCommands
-	generate.TestCommands = python.TestCommands
+	generate.Command.Linter = python.Language.Command.Linter
+	generate.Command.Formatter = python.Language.Command.Formater
+	generate.Command.Test =  python.Language.Command.Test
 }

@@ -23,46 +23,89 @@ import (
 )
 
 type Node struct {
-	platforms []string
+	Javascript *Javascript
+	// Setup
 	managers []string
+	platforms []string
 	frontFrameworks []string
 	backendFrameworks []string
-	nodeVersions []string
 	stages []string
+	// Parameters
 	Platform string
 	Manager string
 	FrontFramework string
 	BackendFramework string
-	NodeVersion string
 	DefinedStages []string
-	GithubActionsUser string
-	GitLabBuildImage string
 }
 
-func (node *Node) construct() {
-	node.platforms = []string{"Fronted", "Backend"}
-	// NPM: https://docs.npmjs.com/cli/v7/commands
-	// YARN 1: https://classic.yarnpkg.com/en/docs/cli/
-	// YARN 2: https://yarnpkg.com/cli/install
-	// PNPM: https://pnpm.io/cli/add
-	node.managers = []string{"npm", "yarn 1", "yarn 2", "pnpm", "None"}
-	node.frontFrameworks = []string{"Vue", "React", "None"}
-	node.backendFrameworks = []string{"Nest", "Vuex", "Next"}
-	node.nodeVersions = []string{"15.x", "14.x", "12.x", "10.x"}
-	node.stages = []string{"lint", "format", "test"}
-	node.GithubActionsUser = "actions/setup-node@v2"
-	node.GitLabBuildImage = ""
+func NewNode() Node {
+	return Node{
+		stages: []string{"lint", "format", "test"},
+		managers: []string{"npm", "yarn 1", "yarn 2", "pnpm", "None"},
+		platforms: []string{"Fronted", "Backend"},
+		frontFrameworks: []string{"Vue", "React", "None"},
+		backendFrameworks: []string{"Nest", "Vuex", "Next"},
+		Javascript: &Javascript{
+			versions: []string{"15.x", "14.x", "12.x", "10.x"},
+			GithubActionsUser: "actions/setup-node@v2",
+			GitLabBuildImage: "",
+			Language: &Language{
+				Command: &Command{
+					Linter: []string{},
+					Formater: []string{},
+					Test: []string{},
+				},
+			},
+		},
+	}
 }
 
 func (node *Node) Init(generate *application.Generate) {
-	node.construct()
+	node.defineStages()
 	node.definePlatform()
 	node.defineManager()
 	// node.defineFrameworks()
-	node.defineVersion()
-	node.defineStages()
+
+	node.Javascript.defineVersion()
+
+	for _, stage := range node.DefinedStages {
+		if stage == "test" {
+			node.defineTest()
+		}
+		if stage == "lint" {
+			node.defineLint()
+		}
+		if stage == "format" {
+			node.defineFormat()
+		}
+	}
 
 	node.fill(generate)
+}
+
+func (node *Node) defineStages() {
+	targetStages := []string{}
+	prompt := &survey.MultiSelect{
+		Message: "Select the stages:",
+		Help: "Stages are the steps that the pipeline will cover.",
+		Options: node.stages[:],
+
+	}
+	survey.AskOne(prompt, &targetStages)
+	node.DefinedStages = targetStages
+}
+
+func (node *Node) defineManager() {
+	targetManager := ""
+	prompt := &survey.Select{
+		Message: "Using a manager?",
+		Options: node.managers[:],
+	}
+	err := survey.AskOne(prompt, &targetManager)
+	if err != nil {
+		utils.Error(err.Error())
+	}
+	node.Manager = targetManager
 }
 
 func (node *Node) definePlatform() {
@@ -115,54 +158,42 @@ func (node *Node) backendHandler() {
 	node.BackendFramework = targetFramework
 }
 
-func (node *Node) defineManager() {
-	targetManager := ""
-	prompt := &survey.Select{
-		Message: "Using a manager?",
-		Options: node.managers[:],
-	}
-	err := survey.AskOne(prompt, &targetManager)
-	if err != nil {
-		utils.Error(err.Error())
-	}
-	node.Manager = targetManager
+func (node *Node) defineLint() {
+	node.Javascript.Language.Command.Linter = append(
+		node.Javascript.Language.Command.Linter,
+		node.Manager + " eslint --ext .js --ext .ts .",
+	)
 }
 
-func (node *Node) defineVersion() {
-	targetVersion := ""
-	prompt := &survey.Select{
-		Message: "What is the NodeJS version?",
-		Options: node.nodeVersions[:],
-	}
-	err := survey.AskOne(prompt, &targetVersion)
-	if err != nil {
-		utils.Error(err.Error())
-	}
-	node.NodeVersion = targetVersion
+func (node *Node) defineFormat() {
+	node.Javascript.Language.Command.Formater = append(
+		node.Javascript.Language.Command.Formater,
+		node.Manager + ` prettier --no-error-on-unmatched-pattern --check "**/*.js" "**/*.ts"`,
+	)
 }
 
-func (node *Node) defineStages() {
-	targetStages := []string{}
-	prompt := &survey.MultiSelect{
-		Message: "Select the stages:",
-		Options: node.stages[:],
-
-	}
-	survey.AskOne(prompt, &targetStages)
-	node.DefinedStages = targetStages
+func (node *Node) defineTest() {
+	node.Javascript.Language.Command.Test = append(
+		node.Javascript.Language.Command.Test,
+		node.Manager + ` run test`,
+	)
 }
 
 func (node *Node) fill(generate *application.Generate) {
-	generate.Language.Name = NODE.String()
+	generate.Language.Name = "Node"
 	generate.ManagerName = node.Manager
 	if node.FrontFramework != "" {
 		generate.FrameworkName = node.FrontFramework
 	} else {
 		generate.FrameworkName = node.BackendFramework
 	}
-	generate.Language.Version = node.NodeVersion
+	generate.Language.Version = node.Javascript.Version
 	generate.DefinedBy = node.DefinedStages
 	generate.Language.Extension = []string{"js", "ts"}
-	generate.Language.GitHubCiBuilder = node.GithubActionsUser
-	generate.Language.GitLabCiBuilder = node.GitLabBuildImage
+	generate.Language.GitHubCiBuilder = node.Javascript.GithubActionsUser
+	generate.Language.GitLabCiBuilder = node.Javascript.GitLabBuildImage
+
+	generate.Command.Linter = node.Javascript.Language.Command.Linter
+	generate.Command.Formatter = node.Javascript.Language.Command.Formater
+	generate.Command.Test = node.Javascript.Language.Command.Test
 }
