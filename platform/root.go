@@ -51,12 +51,12 @@ func Init(generate *application.Generate) {
 
 	switch targetPlatform {
 		case GITLAB.String():
-			gl := GitLab{}
+			gl := NewGitLab()
 			gl.Init(generate)
 		case GITHUB.String():
-			gb := Github{}
+			gb := NewGitHub()
 			gb.Init(generate)
 		default:
-			utils.Error("Platform")
+			utils.Error("platform")
 	}
 }

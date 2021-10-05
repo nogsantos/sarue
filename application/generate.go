@@ -18,6 +18,7 @@ package application
 
 import (
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -98,6 +99,7 @@ type Stages struct {
 }
 
 type Command struct {
+	Build []string
 	Linter []string
 	Formatter []string
 	Test []string
@@ -142,5 +144,5 @@ func (generator *Generate) Finish() {
 	generator.FinishAt = time.Now()
 
 	stdout := "🚀 Success! The files were generated in " + generator.FinishAt.Sub(generator.InitAt).String()
-	fmt.Println(stdout)
+	log.Println(stdout)
 }

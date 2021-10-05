@@ -49,7 +49,11 @@ jobs:
         uses: {{ .Language.GitHubCiBuilder }}
         with:
           {{ .Language.Name | ToLower }}-version: {{ .Language.Version }}
-
+      {{ if .Command.Build }}
+      - name: Build
+        run: |
+          {{range .Command.Build}}{{ . }}
+          {{ end }}{{ end }}
       - name: Lint Execution
         run: |
           {{range .Command.Linter}}{{ . }}
@@ -89,7 +93,11 @@ jobs:
         uses: {{ .Language.GitHubCiBuilder }}
         with:
           {{ .Language.Name | ToLower }}-version: {{ .Language.Version }}
-
+      {{ if .Command.Build }}
+      - name: Build
+        run: |
+          {{range .Command.Build}}{{ . }}
+          {{ end }}{{ end }}
       - name: Test Execution
         run: |
           {{range .Command.Test}}{{ . }}
@@ -129,7 +137,11 @@ jobs:
         uses: {{ .Language.GitHubCiBuilder }}
         with:
           {{ .Language.Name | ToLower }}-version: {{ .Language.Version }}
-
+      {{ if .Command.Build }}
+      - name: Build
+        run: |
+          {{range .Command.Build}}{{ . }}
+          {{ end }}{{ end }}
       - name: Format Execution
         run: |
           {{range .Command.Formatter}}{{ . }}

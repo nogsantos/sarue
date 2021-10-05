@@ -32,12 +32,13 @@ type Github struct {
 	ConfigFile string
 }
 
-func (gb *Github) construct() {
-	gb.ConfigDir = ".github/workflows/"
+func NewGitHub() Github {
+	return Github{
+		ConfigDir: ".github/workflows/",
+	}
 }
 
 func (gb *Github) Init(generate *application.Generate) {
-	gb.construct()
 	gb.githubConfigExists()
 	gb.ParseFile(generate)
 }
@@ -68,13 +69,19 @@ func (gb *Github) ParseFile(generate *application.Generate) {
 func (gb *Github) configureFile(generate *application.Generate) {
 	if len(generate.DefinedBy) > 0 {
 		for _, conf := range generate.DefinedBy {
-			tartargetConf := gb.GithubLintTemplate()
+			tartargetConf := []byte{}
 			if conf == "format" {
 				tartargetConf = gb.GithubFormatTemplate()
-			} else if conf == "test" {
+			}
+			if conf == "test" {
 				tartargetConf = gb.GithubTestTemplate()
 			}
-			utils.WriteConfigFile(gb.ConfigDir, gb.ConfigFile+"."+conf + ".yaml", tartargetConf, generate)
+			if conf == "lint" {
+				tartargetConf = gb.GithubLintTemplate()
+			}
+			if tartargetConf != nil {
+				utils.WriteConfigFile(gb.ConfigDir, gb.ConfigFile+"."+conf + ".yaml", tartargetConf, generate)
+			}
 		}
 	}
 }

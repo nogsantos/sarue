@@ -17,8 +17,6 @@ limitations under the License.
 package language
 
 import (
-	"fmt"
-
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/nogsantos/sarue/application"
 	"github.com/nogsantos/sarue/utils"
@@ -44,19 +42,16 @@ func NewJavascript(runtime string) *Javascript {
 }
 
 func (js *Javascript) Init(generate *application.Generate) {
-	fmt.Println("JS INIT")
 	if js.Runtime == NODE.String() {
 		nd := NewNode()
 		nd.Init(generate)
 	} else {
-		fmt.Println("DENO INIT")
 		dn := NewDeno()
 		dn.Init(generate)
 	}
 }
 
 func (js *Javascript) defineVersion() {
-	fmt.Print("VERSION")
 	targetVersion := ""
 	prompt := &survey.Select{
 		Message: "What is the runtime version?",

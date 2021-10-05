@@ -32,13 +32,14 @@ type GitLab struct {
 
 }
 
-func (gl *GitLab) construct() {
-	gl.ConfigFile = ".gitlab-ci.yml"
-	gl.ConfigPath = "./"
+func NewGitLab() GitLab {
+	return GitLab{
+		ConfigFile:".gitlab-ci.yml",
+		ConfigPath:"./",
+	}
 }
 
 func (gl *GitLab) Init(generate *application.Generate) {
-	gl.construct()
 	gl.gitlabConfigExists(generate)
 	gl.configureGitlaCi(generate)
 }

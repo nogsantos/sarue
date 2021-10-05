@@ -17,6 +17,9 @@ limitations under the License.
 package language
 
 import (
+	"log"
+	"os"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/nogsantos/sarue/application"
 	"github.com/nogsantos/sarue/utils"
@@ -49,6 +52,7 @@ type LanguageInterface interface {
 }
 
 type Command struct {
+	Build []string
 	Linter []string
 	Formater []string
 	Test []string
@@ -82,7 +86,10 @@ func Init(generate *application.Generate) {
 		case DENO.String():
 			language = NewJavascript(DENO.String())
 			language.Init(generate)
+		case GO.String():
+			log.Println("Coming soon")
+			os.Exit(0)
 		default:
-			utils.Error("Language")
+			utils.Error("language")
 	}
 }
