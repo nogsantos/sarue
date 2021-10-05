@@ -14,10 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package utils
 
-import "github.com/nogsantos/sarue/cmd"
+import (
+	"log"
+	"os"
+)
 
-func main() {
-	cmd.Execute()
+func Error(message string) {
+	log.Fatalf("%v: A fatal error occour", message)
+	os.Exit(0)
 }

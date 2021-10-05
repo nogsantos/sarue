@@ -14,10 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package platform
 
-import "github.com/nogsantos/sarue/cmd"
+func (gl *GitLab) GitlabTemplate() []byte {
+	return []byte(`#===================================================================
+# {{ .Tool }}
+#
+# {{ .Copyright }}
+#
+{{ if .Legal.Text }}{{ .Legal.Text }}{{ end }}
+#===================================================================
+stages:
+  - test
+  - build
+  - deploy
 
-func main() {
-	cmd.Execute()
+`)
 }

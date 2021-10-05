@@ -3,9 +3,13 @@ module github.com/nogsantos/sarue
 go 1.16
 
 require (
-	github.com/AlecAivazis/survey/v2 v2.2.16
+	github.com/AlecAivazis/survey/v2 v2.3.2
+	github.com/hashicorp/go-version v1.3.0 // indirect
+	github.com/mattn/go-colorable v0.1.11 // indirect
+	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
+	github.com/mitchellh/gox v1.0.1 // indirect
 	github.com/spf13/cobra v1.2.1
-	github.com/spf13/viper v1.8.1
-	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
-	golang.org/x/text v0.3.6 // indirect
+	github.com/spf13/viper v1.9.0
+	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
+	golang.org/x/text v0.3.7 // indirect
 )
