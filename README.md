@@ -1,3 +1,3 @@
 # Saruê
 
-Sarue is a CLI to start a simple pipeline configuration to your project.
+Saruê is a small CLI that simplifies for you starts a default pipeline configuration for your project.
