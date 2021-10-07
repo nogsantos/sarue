@@ -44,7 +44,7 @@ func NewPython() *Python {
 		frameworks: []string{"Django", "Pytests", "None"},
 		stages: []string{"lint", "format", "test"},
 		GithubActionsUser: "actions/setup-python@v2",
-		GitLabBuildImage: "",
+		GitLabBuildImage: "python:-alpine",
 		Language: &Language{
 			Command: &Command{
 				Linter: []string{},

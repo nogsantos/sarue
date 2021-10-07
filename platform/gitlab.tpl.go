@@ -25,9 +25,42 @@ func (gl *GitLab) GitlabTemplate() []byte {
 {{ if .Legal.Text }}{{ .Legal.Text }}{{ end }}
 #===================================================================
 stages:
-  - test
-  - build
-  - deploy
+  {{range .Stages.DefinedBy}}- {{ . }}
+  {{ end -}}
+{{ $blankLine := '\n' }}
+{{ if Contains .Stages.DefinedBy "lint" -}}
+lint:
+  stage: lint
+  image: {{ .Language.GitLabCiBuilder }}
+  script:
+    - python -m pip install flake8
+    - flake8 . --ignore E203,E501,W503 --count --select=E9,F63,F7,F82 --show-source --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+  tags:
+    - {{ .Language.Name | ToLower }}
+{{ $blankLine := '\n' }}
+{{ end -}}
 
+{{ if Contains .Stages.DefinedBy "format" -}}
+format:
+  stage: format
+  image: {{ .Language.GitLabCiBuilder }}
+  script:
+    - black --check .
+  tags:
+    - {{ .Language.Name | ToLower }}
+{{ $blankLine := '\n' }}
+{{ end -}}
+
+{{ if Contains .Stages.DefinedBy "test" -}}
+test:
+  stage: test
+  image: {{ .Language.GitLabCiBuilder }}
+  script:
+    - python -m pip install --upgrade pip
+    - python -m pip install -r requirements.txt
+    - python ./manage.py test --noinput --failfast -v 2
+  tags:
+    - {{ .Language.Name | ToLower }}
+{{ end -}}
 `)
 }

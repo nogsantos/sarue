@@ -58,6 +58,14 @@ func WriteConfigFile(path, fileName string, local_template []byte, data *applica
 	funcMap := template.FuncMap{
 		"ToUpper": strings.ToUpper,
 		"ToLower": strings.ToLower,
+		"Contains": func(s []string, str string) bool {
+			for _, v := range s {
+				if v == str {
+					return true
+				}
+			}
+			return false
+		},
 	}
 
 
