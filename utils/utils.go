@@ -36,6 +36,7 @@ func PathRoot() string {
 	return wd
 }
 
+// CreateConfigFile is used to generate a configuration file
 func CreateConfigFile(path, fileName, content string) []byte {
 	bcontent := []byte(content)
 	err := ioutil.WriteFile(path+fileName, bcontent, 0644)
@@ -44,10 +45,14 @@ func CreateConfigFile(path, fileName, content string) []byte {
 		Error(errorMessage)
 	}
 
-	file, _ := ioutil.ReadFile(path+fileName)
+	file, err := ioutil.ReadFile(path+fileName)
+	if err != nil {
+		Error("fail to read the file: " + err.Error())
+	}
 	return file
 }
 
+// WriteConfigFile is used to create and write a configuration file
 func WriteConfigFile(path, fileName string, local_template []byte, data *application.Generate) {
 	cmdFile, err := os.Create(fmt.Sprintf("%s%s", path, fileName))
 	if err != nil {

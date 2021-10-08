@@ -22,6 +22,6 @@ import (
 )
 
 func Error(message string) {
-	log.Fatalf("%v: A fatal error occour", message)
-	os.Exit(0)
+	log.Panicln(message + ": A fatal error occour")
+	os.Exit(1)
 }
