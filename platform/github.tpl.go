@@ -57,7 +57,8 @@ jobs:
       - name: Lint Execution
         run: |
           {{range .Command.Linter}}{{ . }}
-          {{ end }}`)
+          {{ end -}}
+`)
 }
 
 func (gb *Github) GithubTestTemplate() []byte {
@@ -101,7 +102,8 @@ jobs:
       - name: Test Execution
         run: |
           {{range .Command.Test}}{{ . }}
-          {{ end }}`)
+          {{ end -}}
+`)
 }
 
 func (gb *Github) GithubFormatTemplate() []byte {
@@ -145,5 +147,6 @@ jobs:
       - name: Format Execution
         run: |
           {{range .Command.Formatter}}{{ . }}
-          {{ end }}`)
+          {{ end -}}
+`)
 }
