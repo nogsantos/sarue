@@ -27,12 +27,12 @@ type Javascript struct {
 	// Setup
 	versions []string
 	// Parameters
-	Runtime string
+	Runtime   string
 	Framework string
-	Version string
+	Version   string
 
 	GithubActionsUser string
-	GitLabBuildImage string
+	GitLabBuildImage  string
 }
 
 func NewJavascript(runtime string) *Javascript {
@@ -64,9 +64,9 @@ func (js *Javascript) defineVersion() {
 	js.Version = targetVersion
 }
 
-func (js *Javascript) defineManager() {}
-func (js *Javascript) defineFramework() {}
-func (js *Javascript) defineLint() {}
-func (js *Javascript) defineTest() {}
-func (js *Javascript) defineFormat() {}
+func (js *Javascript) defineManager()                      {}
+func (js *Javascript) defineFramework()                    {}
+func (js *Javascript) defineLint()                         {}
+func (js *Javascript) defineTest()                         {}
+func (js *Javascript) defineFormat()                       {}
 func (js *Javascript) fill(generate *application.Generate) {}

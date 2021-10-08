@@ -27,8 +27,8 @@ import (
 )
 
 type Github struct {
-	Lang string
-	ConfigDir string
+	Lang       string
+	ConfigDir  string
 	ConfigFile string
 }
 
@@ -56,9 +56,9 @@ func (gb *Github) githubConfigExists() {
 
 func (gb *Github) createConfDir() {
 	err := os.MkdirAll(gb.ConfigDir, 0755)
-    if err != nil {
-        log.Fatal(err)
-    }
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (gb *Github) ParseFile(generate *application.Generate) {
@@ -80,7 +80,7 @@ func (gb *Github) configureFile(generate *application.Generate) {
 				tartargetConf = gb.GithubLintTemplate()
 			}
 			if tartargetConf != nil {
-				utils.WriteConfigFile(gb.ConfigDir, gb.ConfigFile+"."+conf + ".yaml", tartargetConf, generate)
+				utils.WriteConfigFile(gb.ConfigDir, gb.ConfigFile+"."+conf+".yaml", tartargetConf, generate)
 			}
 		}
 	}

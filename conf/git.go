@@ -26,7 +26,7 @@ import (
 	"github.com/nogsantos/sarue/utils"
 )
 
-type Git struct {}
+type Git struct{}
 
 // Git confirms if the repository has a valid git configuration
 func (git *Git) Init() {
@@ -64,7 +64,7 @@ func (git *Git) initRepo() {
 
 	fmt.Println("Initializing the repo...")
 	cmd := exec.Command("git", "init")
-    stdout, commandError := cmd.Output()
+	stdout, commandError := cmd.Output()
 	if commandError != nil {
 		fmt.Printf("Git error %v", commandError)
 		os.Exit(0)

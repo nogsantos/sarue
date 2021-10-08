@@ -22,8 +22,8 @@ import (
 )
 
 type Deno struct {
-	Javascript *Javascript
-	stages []string
+	Javascript    *Javascript
+	stages        []string
 	DefinedStages []string
 }
 
@@ -31,14 +31,14 @@ func NewDeno() Deno {
 	return Deno{
 		stages: []string{"lint", "format", "test"},
 		Javascript: &Javascript{
-			versions: []string{"v1.x"},
+			versions:          []string{"v1.x"},
 			GithubActionsUser: "denoland/setup-deno@v1",
-			GitLabBuildImage: "",
+			GitLabBuildImage:  "",
 			Language: &Language{
 				Command: &Command{
-					Linter: []string{},
+					Linter:   []string{},
 					Formater: []string{},
-					Test: []string{},
+					Test:     []string{},
 				},
 			},
 		},
@@ -68,9 +68,8 @@ func (deno *Deno) defineStages() {
 	targetStages := []string{}
 	prompt := &survey.MultiSelect{
 		Message: "Select the stages:",
-		Help: "Stages are the steps that the pipeline will cover.",
+		Help:    "Stages are the steps that the pipeline will cover.",
 		Options: deno.stages[:],
-
 	}
 	survey.AskOne(prompt, &targetStages)
 	deno.DefinedStages = targetStages

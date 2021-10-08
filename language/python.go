@@ -23,33 +23,33 @@ import (
 )
 
 type Python struct {
-	Language *Language
-	managers []string
-	frameworks []string
-	versions []string
-	stages []string
-	Manager string
-	Framework string
-	Version string
-	DefinedStages []string
+	Language          *Language
+	managers          []string
+	frameworks        []string
+	versions          []string
+	stages            []string
+	Manager           string
+	Framework         string
+	Version           string
+	DefinedStages     []string
 	GithubActionsUser string
-	GitLabBuildImage string
+	GitLabBuildImage  string
 }
 
 // NewPython create a new Python instance
 func NewPython() *Python {
 	return &Python{
-		versions: []string{"3.10", "3.9", "3.8", "3.7", "3.6", "3.5"},
-		managers: []string{"pip", "pipenv", "poetry", "None"},
-		frameworks: []string{"Django", "Pytests", "None"},
-		stages: []string{"lint", "format", "test"},
+		versions:          []string{"3.10", "3.9", "3.8", "3.7", "3.6", "3.5"},
+		managers:          []string{"pip", "pipenv", "poetry", "None"},
+		frameworks:        []string{"Django", "Pytests", "None"},
+		stages:            []string{"lint", "format", "test"},
 		GithubActionsUser: "actions/setup-python@v2",
-		GitLabBuildImage: "python:-alpine",
+		GitLabBuildImage:  "python:-alpine",
 		Language: &Language{
 			Command: &Command{
-				Linter: []string{},
+				Linter:   []string{},
 				Formater: []string{},
-				Test: []string{},
+				Test:     []string{},
 			},
 		},
 	}
@@ -101,15 +101,15 @@ func (python *Python) defineManager() {
 	python.Manager = targetManager
 	python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip install --upgrade pip")
 	switch targetManager {
-		case "pip":
-			python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip install -r requirements.txt")
-		case "pipenv":
-			python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip install pipenv==2020.8.13")
-			python.Language.Command.Test = append(python.Language.Command.Test, "pipenv install --system --deploy --python " + python.Version)
-		case "poetry":
-			python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip install poetry")
-			python.Language.Command.Test = append(python.Language.Command.Test, "poetry config virtualenvs.create false")
-			python.Language.Command.Test = append(python.Language.Command.Test, "poetry install --no-root")
+	case "pip":
+		python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip install -r requirements.txt")
+	case "pipenv":
+		python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip install pipenv==2020.8.13")
+		python.Language.Command.Test = append(python.Language.Command.Test, "pipenv install --system --deploy --python "+python.Version)
+	case "poetry":
+		python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip install poetry")
+		python.Language.Command.Test = append(python.Language.Command.Test, "poetry config virtualenvs.create false")
+		python.Language.Command.Test = append(python.Language.Command.Test, "poetry install --no-root")
 	}
 }
 
@@ -130,7 +130,7 @@ func (python *Python) defineStages() {
 	targetStages := []string{}
 	prompt := &survey.MultiSelect{
 		Message: "Select the stages:",
-		Help: "Stages are the steps that the pipeline will cover.",
+		Help:    "Stages are the steps that the pipeline will cover.",
 		Options: python.stages[:],
 	}
 	survey.AskOne(prompt, &targetStages)
@@ -149,12 +149,12 @@ func (python *Python) defineFormat() {
 
 func (python *Python) defineTest() {
 	switch python.Framework {
-		case "Django":
+	case "Django":
 		python.Language.Command.Test = append(python.Language.Command.Test, "python ./manage.py test --noinput --failfast -v 2")
-		case "Pytests":
-			python.Language.Command.Test = append(python.Language.Command.Test, "pytest -vv -s --log-level=INFO")
-		default:
-			python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip pip install -r requirements.txt")
+	case "Pytests":
+		python.Language.Command.Test = append(python.Language.Command.Test, "pytest -vv -s --log-level=INFO")
+	default:
+		python.Language.Command.Test = append(python.Language.Command.Test, "python -m pip pip install -r requirements.txt")
 	}
 }
 
@@ -169,5 +169,5 @@ func (python *Python) fill(generate *application.Generate) {
 	generate.Language.GitLabCiBuilder = python.GitLabBuildImage
 	generate.Command.Linter = python.Language.Command.Linter
 	generate.Command.Formatter = python.Language.Command.Formater
-	generate.Command.Test =  python.Language.Command.Test
+	generate.Command.Test = python.Language.Command.Test
 }

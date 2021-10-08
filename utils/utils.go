@@ -45,7 +45,7 @@ func CreateConfigFile(path, fileName, content string) []byte {
 		Error(errorMessage)
 	}
 
-	file, err := ioutil.ReadFile(path+fileName)
+	file, err := ioutil.ReadFile(path + fileName)
 	if err != nil {
 		Error("fail to read the file: " + err.Error())
 	}
@@ -72,7 +72,6 @@ func WriteConfigFile(path, fileName string, local_template []byte, data *applica
 			return false
 		},
 	}
-
 
 	githubTemplate := template.Must(template.New(data.Language.Name).Funcs(funcMap).Parse(string(local_template)))
 

@@ -26,9 +26,9 @@ import (
 
 // generateCmd represents the generate command
 var generateCmd = &cobra.Command{
-	Use:   "generate",
-	Long: `Init a configuration base file to your project.`,
-	Short: "Start a CI configuration",
+	Use:     "generate",
+	Long:    `Init a configuration base file to your project.`,
+	Short:   "Start a CI configuration",
 	Aliases: []string{"g"},
 	Example: `
   Long form: sarue generate

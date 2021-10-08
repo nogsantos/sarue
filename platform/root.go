@@ -23,6 +23,7 @@ import (
 )
 
 type PlatfomType int
+
 const (
 	GITHUB PlatfomType = iota
 	GITLAB
@@ -50,13 +51,13 @@ func Init(generate *application.Generate) {
 	}
 
 	switch targetPlatform {
-		case GITLAB.String():
-			gl := NewGitLab()
-			gl.Init(generate)
-		case GITHUB.String():
-			gb := NewGitHub()
-			gb.Init(generate)
-		default:
-			utils.Error("platform")
+	case GITLAB.String():
+		gl := NewGitLab()
+		gl.Init(generate)
+	case GITHUB.String():
+		gb := NewGitHub()
+		gb.Init(generate)
+	default:
+		utils.Error("platform")
 	}
 }

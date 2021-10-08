@@ -29,40 +29,40 @@ import (
 )
 
 type Node struct {
-	Javascript *Javascript
-	managers []string
-	stages []string
-	Platform string
-	Manager string
-	FrontFramework string
+	Javascript       *Javascript
+	managers         []string
+	stages           []string
+	Platform         string
+	Manager          string
+	FrontFramework   string
 	BackendFramework string
-	DefinedStages []string
-	PackageJson PackageJson
+	DefinedStages    []string
+	PackageJson      PackageJson
 }
 
 type PackageJson struct {
-    Scripts struct {
-		Build string `json:"build"`
-		Format string `json:"format"`
-		Test string `json:"test"`
+	Scripts struct {
+		Build    string `json:"build"`
+		Format   string `json:"format"`
+		Test     string `json:"test"`
 		TestUnit string `json:"test:unit"`
-		Lint string `json:"lint"`
+		Lint     string `json:"lint"`
 	} `json:"scripts"`
 }
 
 func NewNode() Node {
 	return Node{
-		stages: []string{"lint", "format", "test"},
+		stages:   []string{"lint", "format", "test"},
 		managers: []string{"npm", "yarn 1", "yarn 2", "pnpm", "None"},
 		Javascript: &Javascript{
-			versions: []string{"16.x", "14.x", "12.x"},
+			versions:          []string{"16.x", "14.x", "12.x"},
 			GithubActionsUser: "actions/setup-node@v2",
-			GitLabBuildImage: "",
+			GitLabBuildImage:  "",
 			Language: &Language{
 				Command: &Command{
-					Linter: []string{},
+					Linter:   []string{},
 					Formater: []string{},
-					Test: []string{},
+					Test:     []string{},
 				},
 			},
 		},
@@ -93,9 +93,8 @@ func (node *Node) defineStages() {
 	targetStages := []string{}
 	prompt := &survey.MultiSelect{
 		Message: "Select the stages:",
-		Help: "Stages are the steps that the pipeline will cover.",
+		Help:    "Stages are the steps that the pipeline will cover.",
 		Options: node.stages[:],
-
 	}
 	survey.AskOne(prompt, &targetStages)
 	node.DefinedStages = targetStages
@@ -118,8 +117,7 @@ func (node *Node) defineManager() {
 		log.Println(err.Error(), "Using npx by default")
 	}
 
-	hasConfigurationFile := (
-		node.PackageJson.Scripts.Build != "" ||
+	hasConfigurationFile := (node.PackageJson.Scripts.Build != "" ||
 		node.PackageJson.Scripts.Format != "" ||
 		node.PackageJson.Scripts.Lint != "" ||
 		node.PackageJson.Scripts.Test != "" ||
@@ -128,16 +126,16 @@ func (node *Node) defineManager() {
 	if hasConfigurationFile {
 		// Install the manager Install the packages by manager definition
 		switch node.Manager {
-			case "npm":
-				node.setupNpm()
-			case "yarn 1":
-				node.setupYarn()
-			case "yarn 2":
-				node.setupYarnTwo()
-			case "pnpm":
-				node.setupPnpm()
-			default:
-				node.setupNpm()
+		case "npm":
+			node.setupNpm()
+		case "yarn 1":
+			node.setupYarn()
+		case "yarn 2":
+			node.setupYarnTwo()
+		case "pnpm":
+			node.setupPnpm()
+		default:
+			node.setupNpm()
 		}
 	} else {
 		log.Println("no script definition was found in the package.json file. Using npx by default")
@@ -235,7 +233,7 @@ func (node *Node) defineLint() {
 			// run lint script
 			node.Javascript.Language.Command.Linter = append(
 				node.Javascript.Language.Command.Linter,
-				node.normalizeManagerName(node.Manager) + " run lint",
+				node.normalizeManagerName(node.Manager)+" run lint",
 			)
 		} else {
 			// There's no package, using stand alone config
@@ -261,7 +259,7 @@ func (node *Node) defineFormat() {
 			// run lint script
 			node.Javascript.Language.Command.Formater = append(
 				node.Javascript.Language.Command.Formater,
-				node.normalizeManagerName(node.Manager) + ` prettier --no-error-on-unmatched-pattern --check "**/*.js" "**/*.ts"`,
+				node.normalizeManagerName(node.Manager)+` prettier --no-error-on-unmatched-pattern --check "**/*.js" "**/*.ts"`,
 			)
 		} else {
 			// There's no package, using stand alone config
@@ -284,12 +282,12 @@ func (node *Node) defineTest() {
 		if node.PackageJson.Scripts.Test != "" {
 			node.Javascript.Language.Command.Test = append(
 				node.Javascript.Language.Command.Test,
-				node.normalizeManagerName(node.Manager) + " run test",
+				node.normalizeManagerName(node.Manager)+" run test",
 			)
-		} else if node.PackageJson.Scripts.TestUnit != ""  {
+		} else if node.PackageJson.Scripts.TestUnit != "" {
 			node.Javascript.Language.Command.Test = append(
 				node.Javascript.Language.Command.Test,
-				node.normalizeManagerName(node.Manager) + " run test:unit",
+				node.normalizeManagerName(node.Manager)+" run test:unit",
 			)
 		} else {
 			node.defaultTest()

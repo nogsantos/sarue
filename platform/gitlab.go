@@ -29,13 +29,12 @@ import (
 type GitLab struct {
 	ConfigFile string
 	ConfigPath string
-
 }
 
 func NewGitLab() GitLab {
 	return GitLab{
-		ConfigFile:".gitlab-ci.yml",
-		ConfigPath:"./",
+		ConfigFile: ".gitlab-ci.yml",
+		ConfigPath: "./",
 	}
 }
 
